@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#6d4aa5">
+    <title>Éstia — Proteção discreta e conectada</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="brand">
+                <img src="assets/logo-estia.png" alt="Logo Éstia">
+                <div>
+                    <h1>Éstia</h1>
+                    <p>Proteção discreta e conectada</p>
+                </div>
+            </div>
+            <span id="globalStatus" class="badge">Pronta</span>
+        </header>
+
+        <main>
+            <section class="page active" id="inicio">
+                <div class="hero">
+                    <div>
+                        <span class="eyebrow">SEGURANÇA PESSOAL</span>
+                        <h2>Sua rede de proteção em um só lugar.</h2>
+                        <p>Conecte seus dispositivos, acompanhe a localização e compartilhe um pedido de ajuda.</p>
+                    </div>
+                    <img src="assets/logo-estia.png" alt="">
+                </div>
+
+                <h3 class="section-title">Dispositivos</h3>
+                <div class="devices">
+                    <article class="device-card">
+                        <div class="device-icon">🗲</div>
+                        <div class="grow"><b>iTag</b><small id="itagState">Não conectado</small></div>
+                        <button id="connectItag" class="btn small">Conectar</button>
+                    </article>
+                    <article class="device-card">
+                        <div class="device-icon">USB</div>
+                        <div class="grow"><b>ESP32-C3 Mini</b><small id="espState">Não conectado</small></div>
+                        <button id="connectEsp" class="btn small">Conectar</button>
+                    </article>
+                </div>
+
+                <article class="map-card">
+                    <div class="card-head">
+                        <div><span class="eyebrow">LOCALIZAÇÃO</span>
+                            <h3>Mapa</h3>
+                        </div>
+                        <button id="locate" class="ghost">Atualizar</button>
+                    </div>
+                    <div id="map"></div>
+                    <div class="coords">
+                        <div><span>Latitude</span><b id="lat">—</b></div>
+                        <div><span>Longitude</span><b id="lng">—</b></div>
+                        <div><span>Precisão</span><b id="acc">—</b></div>
+                    </div>
+                    <p id="mapSource" class="hint">A localização exibida inicialmente é a do celular. Tags Apple Find My não expõem sua posição diretamente a esta página web.</p>
+                </article>
+
+                <button id="sos" class="sos">
+        <span>SOS</span><small>Segure por 2 segundos para pedir ajuda</small>
+      </button>
+            </section>
+
+            <section class="page" id="dispositivos">
+                <div class="page-head"><span class="eyebrow">CONEXÕES</span>
+                    <h2>Meus dispositivos</h2>
+                </div>
+
+                <article class="panel">
+                    <div class="panel-title">
+                        <div class="device-icon">⌁</div>
+                        <div>
+                            <h3>iTag</h3>
+                            <p>Bluetooth / Apple Find My</p>
+                        </div>
+                    </div>
+                    <p class="hint">O modo Bluetooth abaixo procura dispositivos BLE compatíveis. O modelo Gshield informado funciona oficialmente com Apple Find My; a localização da rede Find My permanece no ecossistema Apple.</p>
+                    <button id="itagPanelConnect" class="btn full">Procurar iTag por Bluetooth</button>
+                    <div class="kv"><span>Nome</span><b id="itagName">—</b></div>
+                    <div class="kv"><span>ID da sessão</span><b id="itagId">—</b></div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-title">
+                        <div class="device-icon">USB</div>
+                        <div>
+                            <h3>ESP32-C3 Mini</h3>
+                            <p>Web Serial via USB</p>
+                        </div>
+                    </div>
+                    <label>Baud rate
+          <select id="baud"><option>9600</option><option selected>115200</option><option>230400</option></select>
+        </label>
+                    <button id="espPanelConnect" class="btn full">Conectar ESP32-C3 Mini</button>
+                    <div class="kv"><span>Status</span><b id="espDetail">Desconectado</b></div>
+                    <pre id="serialLog">Aguardando conexão...</pre>
+                </article>
+            </section>
+
+            <section class="page" id="alertas">
+                <div class="page-head"><span class="eyebrow">PEDIDO DE AJUDA</span>
+                    <h2>Alertas</h2>
+                </div>
+                <article class="panel form">
+                    <label>Mensagem padrão
+          <textarea id="message" rows="4">Preciso de ajuda. Minha localização atual está no link abaixo.</textarea>
+        </label>
+                    <label>WhatsApp do contato
+          <input id="whatsapp" type="tel" placeholder="5551999999999">
+        </label>
+                    <label class="toggle"><span>Incluir localização no alerta</span><input id="includeLocation" type="checkbox" checked></label>
+                    <label class="toggle"><span>Enviar comando de alerta ao ESP32</span><input id="sendEsp" type="checkbox" checked></label>
+                    <button id="testAlert" class="btn full">Testar alerta</button>
+                </article>
+                <article class="note">
+                    <b>WhatsApp</b>
+                    <p>Este MVP abre uma conversa do WhatsApp com a mensagem e localização preenchidas. Para envio automático sem interação do usuário, use um backend autorizado com a WhatsApp Business Platform; não coloque tokens secretos no JavaScript
+                        do navegador.</p>
+                </article>
+            </section>
+
+            <section class="page" id="historico">
+                <div class="page-head row">
+                    <div><span class="eyebrow">REGISTROS</span>
+                        <h2>Histórico</h2>
+                    </div><button id="clearHistory" class="danger-link">Limpar</button></div>
+                <div id="historyList" class="history"></div>
+            </section>
+
+            <section class="page" id="ajustes">
+                <div class="page-head"><span class="eyebrow">CONFIGURAÇÕES</span>
+                    <h2>Sobre o protótipo</h2>
+                </div>
+                <article class="panel">
+                    <img class="about-logo" src="assets/logo-estia.png" alt="Éstia">
+                    <h3>Éstia</h3>
+                    <p class="slogan">Proteção discreta e conectada</p>
+                    <p class="hint">Protótipo web mobile para experimentação com localização, BLE e ESP32-C3 Mini.</p>
+                    <div class="kv"><span>iTag</span><b>Web Bluetooth (quando compatível)</b></div>
+                    <div class="kv"><span>ESP32</span><b>Web Serial / USB</b></div>
+                    <div class="kv"><span>Mapa</span><b>Leaflet + OpenStreetMap</b></div>
+                </article>
+            </section>
+        </main>
+
+        <nav class="nav">
+            <button data-page="inicio" class="active"><span>⌂</span>Início</button>
+            <button data-page="dispositivos"><span>🗲</span>Dispositivos</button>
+            <button data-page="alertas"><span>!</span>Alertas</button>
+            <button data-page="historico"><span>◷</span>Histórico</button>
+            <button data-page="ajustes"><span>⚙</span>Ajustes</button>
+        </nav>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <div id="holdOverlay" class="overlay hidden">
+        <div class="pulse"><b id="count">2</b></div>
+        <p>Mantenha pressionado...</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
