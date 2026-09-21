@@ -1,9 +1,9 @@
 :root {
-    --l950: #35204f;
-    --l800: #53377b;
-    --l700: #6d4aa5;
-    --l600: #8060b5;
-    --l400: #b59ad8;
+    --l950: #954ff0;
+    --l800: #834fcc;
+    --l700: #752ed8;
+    --l600: rgb(81, 26, 170);
+    --l400: #722bcf;
     --l200: #ded1ef;
     --l100: #eee7f7;
     --l50: #f8f5fc;
@@ -120,7 +120,7 @@ main {
     padding: 25px;
     border-radius: 28px;
     color: white;
-    background: linear-gradient(145deg, var(--l950), var(--l700) 68%, #9878c3);
+    background: linear-gradient(145deg, var(--l950), var(--l700) 68%, #c89eff);
     box-shadow: 0 20px 45px rgba(83, 55, 123, .22);
     overflow: hidden
 }
@@ -515,7 +515,7 @@ pre {
     border: 0;
     border-radius: 13px;
     background: transparent;
-    color: #94899d;
+    color: #7b2abe;
     padding: 6px 2px;
     font-size: .70rem;
     font-weight: 750
